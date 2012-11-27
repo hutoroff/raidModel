@@ -49,5 +49,16 @@ namespace raidModel
         {   //makes disk avalible for use
             state = true;
         }
+
+        public int getSize()
+        {
+            return mainSize;
+        }
+
+        public int write(IEnumerable<sbyte> nDat)
+        {
+            return 0;
+            //TODO: make function
+        }
     }
 }

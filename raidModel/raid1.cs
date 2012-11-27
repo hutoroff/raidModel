@@ -8,5 +8,6 @@ namespace raidModel
 {
     class raid1
     {
-    }
+        const int minHDD = 2;       //min amoun of disks in RAID-1
+        
 }
