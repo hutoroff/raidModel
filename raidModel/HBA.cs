@@ -8,8 +8,7 @@ namespace raidModel
 {
     class HBA
     {
-        object type;
-
-
+        object array;       //RAID type
+        List<disk> hdd;     //list of Hard Disk Drives in RAID
     }
 }
