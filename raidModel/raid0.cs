@@ -16,13 +16,13 @@ namespace raidModel
             for (int i = 0; i < minHDD; i++)
             {
                 addDisk(dType);
-                arrayCpacity += dType.getSize();
+                arrayCapacity += dType.getSize();
             }
         }
 
         public raid0()
         {
-            arrayCpacity = 0;
+            arrayCapacity = 0;
         }
 
         public int isEnoughDisks()
