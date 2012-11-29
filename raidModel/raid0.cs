@@ -8,7 +8,7 @@ namespace raidModel
 {
     class raid0: HBA
     {
-        const int minHDD = 2;       //min amoun of disks in RAID-1
+        const int minHDD = 2;       //min amount of disks in RAID-1
         int arrayCapacity;           //amount of disk space for all disks in array
 
         public raid0(disk dType)
