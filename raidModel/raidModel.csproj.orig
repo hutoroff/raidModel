@@ -9,7 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>raidModel</RootNamespace>
     <AssemblyName>raidModel</AssemblyName>
+<<<<<<< HEAD
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+=======
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+>>>>>>> 57d6368f1cf7a890bd4470fc4de9cefe5c1ec5e9
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
