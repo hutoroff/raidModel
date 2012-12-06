@@ -7,7 +7,7 @@ namespace raidModel
 {
     class raid0: HBA
     {
-        const int minHDD = 2;       //min amount of disks in RAID-1
+        const int minHDD = 2;       //min amount of disks in RAID-0
         int arrayCapacity;          //amount of disk space for all disks in array
 
         public raid0(disk dType)
@@ -24,7 +24,7 @@ namespace raidModel
             arrayCapacity = 0;
         }
 
-        public int isEnoughDisks()
+        int isEnoughDisks()
         {
             if (hdd.Count < minHDD)
                 return 0;
@@ -32,36 +32,56 @@ namespace raidModel
                 return 1;
         }
 
+        public void addDisk(disk nDisk)
+        {
+            hdd.Insert(hdd.Count,nDisk);
+        }
+
         public int writeToArray(List<sbyte> newData)
         {
+            DateTime start, end;
+            start = DateTime.Now;
+
+            if (isEnoughDisks() == 0)
+                return -1;
             if (newData.Capacity > arrayCapacity)
-                return 1;
+                return -1;
             int i = 0;
             while(i<newData.Count())
             {
-                for(int j=0;j<hdd.Count();j++)
+                for(int j=0;j<hdd.Count;j++)
                 {
+                    if (hdd.ElementAt(j).getState() == false)
+                        return -1;
                     if (hdd.ElementAt(j).writeToEnd(newData.ElementAt(i))==1)
-                        return 1;
+                        return -1;
                     i++;
-                    if (i >= newData.Count())
+                    if (i >= newData.Count)
                         break;
                 }
             }
-            return 0;
+
+            end = DateTime.Now;
+            TimeSpan resultTime = end - start;
+            return resultTime.Milliseconds;
         }
 
         public int readFromArray(List<sbyte> newData)
         {
+            DateTime start, end;
+            start = DateTime.Now;
+
+            if (isEnoughDisks() == 0)
+                return -1;
             int i = 0;
             bool stoper = true;
             sbyte b;
             while(stoper)
             {
-                for(int j=0;j<hdd.Count();j++)
+                for(int j=0;j<hdd.Count;j++)
                 {
                     if (hdd.ElementAt(j).getState() == false)
-                        return 1;
+                        return -1;
                     b = hdd.ElementAt(j).readByte(i);
                     if (b == -128)
                         stoper = false;
@@ -69,7 +89,10 @@ namespace raidModel
                         i++;
                 }
             }
-            return 0;
+
+            end = DateTime.Now;
+            TimeSpan resultTime = end - start;
+            return resultTime.Milliseconds;
         }
     }
 }
