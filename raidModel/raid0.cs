@@ -8,25 +8,29 @@ namespace raidModel
     class raid0: HBA
     {
         const int minHDD = 2;       //min amount of disks in RAID-0
-        int arrayCapacity;          //amount of disk space for all disks in array
+        double arrayCapacity;          //amount of disk space for all disks in array
+        HBA array;
 
         public raid0(disk dType)
         {
+            array = new HBA();
             for (int i = 0; i < minHDD; i++)
             {
-                addDisk(dType);
+                array.addDisk(dType);
                 arrayCapacity += dType.getSize();
             }
         }
 
         public raid0()
         {
+            array = new HBA();
             arrayCapacity = 0;
         }
 
         int isEnoughDisks()
         {
-            if (hdd.Count < minHDD)
+            
+            if (array.Count() < minHDD)
                 return 0;
             else
                 return 1;
@@ -34,7 +38,7 @@ namespace raidModel
 
         public void addDisk(disk nDisk)
         {
-            hdd.Insert(hdd.Count,nDisk);
+            array.addDisk(nDisk);
         }
 
         public int writeToArray(List<sbyte> newData)
@@ -49,11 +53,11 @@ namespace raidModel
             int i = 0;
             while(i<newData.Count())
             {
-                for(int j=0;j<hdd.Count;j++)
+                for(int j=0;j<array.Count();j++)
                 {
-                    if (hdd.ElementAt(j).getState() == false)
+                    if (array.getDiskState(j) == false)
                         return -1;
-                    if (hdd.ElementAt(j).writeToEnd(newData.ElementAt(i))==1)
+                    if (array.writeToDisk(j,newData.ElementAt(i))==1)
                         return -1;
                     i++;
                     if (i >= newData.Count)
@@ -78,11 +82,11 @@ namespace raidModel
             sbyte b;
             while(stoper)
             {
-                for(int j=0;j<hdd.Count;j++)
+                for(int j=0;j<array.Count();j++)
                 {
-                    if (hdd.ElementAt(j).getState() == false)
+                    if (array.getDiskState(j) == false)
                         return -1;
-                    b = hdd.ElementAt(j).readByte(i);
+                    b = array.readFromDisk(j,i);
                     if (b == -128)
                         stoper = false;
                     else

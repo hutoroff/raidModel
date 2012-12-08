@@ -7,7 +7,7 @@ namespace raidModel
 {
     class HBA
     {
-        protected List<disk> hdd;     //list of Hard Disk Drives in RAID
+        private List<disk> hdd;     //list of Hard Disk Drives in RAID
 
 
         public HBA(IEnumerable<disk> diskList)
@@ -29,12 +29,27 @@ namespace raidModel
         {
         }
 
-        protected void addDisk(disk newDisk)
+        public disk getDisk(int i)
+        {
+            return hdd.ElementAt(i);
+        }
+
+        public bool getDiskState(int i)
+        {
+            return hdd.ElementAt(i).getState();
+        }
+
+        public int Count()
+        {
+            return hdd.Count;
+        }
+
+        public void addDisk(disk newDisk)
         {
             hdd.Add(newDisk);
         }
 
-        protected int removeDisk()
+        public int removeDisk()
         {
             if (hdd.Count > 0)
             {
@@ -45,7 +60,7 @@ namespace raidModel
                 return 1;
         }
 
-        protected int removeDisk(int num)
+        public int removeDisk(int num)
         {
             if (hdd.Count > 0 && hdd.Count >= num && num >= 0)
             {
@@ -54,6 +69,16 @@ namespace raidModel
             }
             else
                 return 1;
+        }
+
+        public int writeToDisk(int i,sbyte dat)
+        {
+            return hdd.ElementAt(i).writeToEnd(dat);
+        }
+
+        public sbyte readFromDisk(int i, int j)
+        {
+            return hdd.ElementAt(i).readByte(j);
         }
     }
 }

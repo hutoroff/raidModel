@@ -7,42 +7,71 @@ namespace raidModel
 {
     class disk
     {
-        int mainSize;               //size of disk space in bytes
-        int freeSpace;              //free disk space
-        int cacheSize;              //size of disk cache memory in bytes
+        double mainSize;               //size of disk space in bytes
+        double freeSpace;              //free disk space
+        double cacheSize;              //size of disk cache memory in bytes
         bool state;                 //condition of the disk: true - OK, false - failure
         List<sbyte> data;           //data, saved on this disk
         List<sbyte> cache;          //cache memory of the disk
-        int latency;                //latency of time between operations in ms
+        float latencyRead;            //latency of time between operations of reading in ms
+        float latencyWrite;           //latency of time between operations of writing in ms
+        private double p1;
+        private int p2;
+        private double p3;
+        private int p4;
 
         #region Constructors
-        public disk(int nS)
+        public disk(double nS)
         {
             mainSize = nS;
             cacheSize = (16 * 1024 * 1024); //16MB by default
             freeSpace = mainSize;
-            latency = 0;                    //no extra latency by default
+            latencyRead = 0;                    //no extra latency by default
+            latencyWrite = 0;
             state = true;
 
         }
 
-        public disk(int nS, IEnumerable<sbyte> nDat)
+        public disk(double nS, IEnumerable<sbyte> nDat)
         {
             mainSize = nS;
             cacheSize = (16 * 1024 * 1024); //16MB by default
-            latency = 0;                    //no extra latency by default
+            latencyRead = 0;                    //no extra latency by default
+            latencyWrite = 0;
             data.InsertRange(0, nDat);
             freeSpace = mainSize - nDat.Count();
+            state = true;
         }
 
-        public disk(int mSz, int cSz, int let, IEnumerable<sbyte> nDat)
+        public disk(double mSz, double cSz, float letR, float letW, IEnumerable<sbyte> nDat)
         {
             mainSize = mSz;
             cacheSize = cSz;
-            latency = let;
+            latencyRead = letR;
+            latencyWrite = letW;
             data.InsertRange(0, nDat);
             freeSpace = mainSize - nDat.Count();
+            state = true;
         }
+
+        public disk(double mSz, double cSz, float letR, float letW)
+        {
+            mainSize = mSz;
+            cacheSize = cSz;
+            latencyRead = letR;
+            latencyWrite = letW;
+            freeSpace = mainSize;
+            state = true;
+        }
+
+        //public disk(double p1, int p2, double p3, int p4)
+        //{
+        //    // TODO: Complete member initialization
+        //    this.p1 = p1;
+        //    this.p2 = p2;
+        //    this.p3 = p3;
+        //    this.p4 = p4;
+        //}
         #endregion
 
         public void brake()
@@ -55,12 +84,12 @@ namespace raidModel
             state = true;
         }
 
-        public int getSize()
+        public double getSize()
         {
             return mainSize;
         }
 
-        public int getFreeSpace()
+        public double getFreeSpace()
         {
             return freeSpace;
         }
@@ -75,7 +104,8 @@ namespace raidModel
             if (nDat.Count() > this.freeSpace)
                 return 1;
             data.InsertRange(0, nDat);
-            System.Threading.Thread.Sleep(latency);
+            TimeSpan toSleep = new TimeSpan(0, 0, 0, Convert.ToInt32(latencyWrite), Convert.ToInt32((latencyWrite - Convert.ToInt32(latencyWrite))*100));
+            System.Threading.Thread.Sleep(toSleep);
             if (state)
                 return 0;
             return 1;
@@ -86,7 +116,8 @@ namespace raidModel
             if (nDat.Count() > this.freeSpace)
                 return 1;
             data.InsertRange(data.Count(), nDat);
-            System.Threading.Thread.Sleep(latency);
+            TimeSpan toSleep = new TimeSpan(0, 0, 0, Convert.ToInt32(latencyWrite), Convert.ToInt32((latencyWrite - Convert.ToInt32(latencyWrite)) * 100));
+            System.Threading.Thread.Sleep(toSleep);
             if (state)
                 return 0;
             return 1;
