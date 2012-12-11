@@ -30,7 +30,22 @@ namespace raidModel
                 return true;
             }
             textBox3.Text = Convert.ToString(writeTime);
+            writeTime = 0;
             return false;
+        }
+
+        private bool read(raid0 array)
+        {       //true - failure, false - OK
+            List<sbyte> readHere = new List<sbyte>();
+            readTime = array.readFromArray(readHere);
+            if(readTime == -1)
+            {
+                readTime = 0;
+                return true;
+            }
+            textBox2.Text = readTime.ToString();
+            readTime = 0;
+            return false;            
         }
 
         //private bool write(raid1 array)
@@ -91,7 +106,7 @@ namespace raidModel
             progressBar1.Value = 0;
             for(int i=0;i<length;i++)
             {
-                toPut += Convert.ToChar(rand.Next(1, 128));
+                toPut +=  Convert.ToChar(rand.Next(1, 128));
                 progressBar1.Value++;
             }
             textBox1.Text += toPut;
@@ -127,6 +142,8 @@ namespace raidModel
                     array.addDisk(hdd);
                 if (write(array))
                     MessageBox.Show("Ошибка записи в массив!");
+                if (read(array))
+                    MessageBox.Show("Ошибка чтения из массива!");
             }
             else
             {

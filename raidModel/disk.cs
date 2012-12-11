@@ -23,6 +23,8 @@ namespace raidModel
         #region Constructors
         public disk(double nS)
         {
+            data = new List<sbyte>();
+            cache = new List<sbyte>();
             mainSize = nS;
             cacheSize = (16 * 1024 * 1024); //16MB by default
             freeSpace = mainSize;
@@ -34,6 +36,8 @@ namespace raidModel
 
         public disk(double nS, IEnumerable<sbyte> nDat)
         {
+            data = new List<sbyte>();
+            cache = new List<sbyte>();
             mainSize = nS;
             cacheSize = (16 * 1024 * 1024); //16MB by default
             latencyRead = 0;                    //no extra latency by default
@@ -45,6 +49,8 @@ namespace raidModel
 
         public disk(double mSz, double cSz, float letR, float letW, IEnumerable<sbyte> nDat)
         {
+            data = new List<sbyte>();
+            cache = new List<sbyte>();
             mainSize = mSz;
             cacheSize = cSz;
             latencyRead = letR;
@@ -56,6 +62,8 @@ namespace raidModel
 
         public disk(double mSz, double cSz, float letR, float letW)
         {
+            data = new List<sbyte>();
+            cache = new List<sbyte>();
             mainSize = mSz;
             cacheSize = cSz;
             latencyRead = letR;
@@ -94,6 +102,15 @@ namespace raidModel
             return freeSpace;
         }
 
+        public float getWLat()
+        {
+            return latencyWrite;
+        }
+
+        public float getRLat()
+        {
+            return latencyRead;
+        }
         public bool getState()
         {
             return state;

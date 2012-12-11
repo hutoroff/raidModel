@@ -12,21 +12,25 @@ namespace raidModel
 
         public HBA(IEnumerable<disk> diskList)
         {
+            hdd = new List<disk>();
             hdd.InsertRange(0, diskList);
         }
 
         public HBA(disk nD)
         {
+            hdd = new List<disk>();
             hdd.Add(nD);
         }
 
         public HBA(HBA oldH)
         {
+            hdd = new List<disk>();
             this.hdd.InsertRange(0, oldH.hdd);
         }
 
         public HBA()
         {
+            hdd = new List<disk>();
         }
 
         public disk getDisk(int i)
@@ -79,6 +83,11 @@ namespace raidModel
         public sbyte readFromDisk(int i, int j)
         {
             return hdd.ElementAt(i).readByte(j);
+        }
+
+        public float getWriteLatency(int i)
+        {
+            return hdd.ElementAt(i).getWLat();
         }
     }
 }

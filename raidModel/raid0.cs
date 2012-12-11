@@ -39,6 +39,7 @@ namespace raidModel
         public void addDisk(disk nDisk)
         {
             array.addDisk(nDisk);
+            arrayCapacity += nDisk.getSize();
         }
 
         public int writeToArray(List<sbyte> newData)
@@ -67,30 +68,34 @@ namespace raidModel
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;
-            return resultTime.Milliseconds;
+            return resultTime.Milliseconds + Convert.ToInt32(array.getWriteLatency(0));
         }
 
         public int readFromArray(List<sbyte> newData)
         {
+            //SOLVE WHAT A FUCK!
             DateTime start, end;
             start = DateTime.Now;
 
             if (isEnoughDisks() == 0)
                 return -1;
-            int i = 0;
+            int i = 0;      //disk number in array
             bool stoper = true;
             sbyte b;
             while(stoper)
             {
-                for(int j=0;j<array.Count();j++)
+                for(int j=0;j<array.Count();j++)        //memory slot on disk
                 {
                     if (array.getDiskState(j) == false)
                         return -1;
-                    b = array.readFromDisk(j,i);
+                    b = array.readFromDisk(i,j);
                     if (b == -128)
                         stoper = false;
                     else
-                        i++;
+                    {
+                        newData.Add(b);
+                        //i++;
+                    }
                 }
             }
 
