@@ -48,21 +48,35 @@ namespace raidModel
             return false;            
         }
 
-        //private bool write(raid1 array)
-        //{       //true - in case of failure; false - in case of success
-        //    List<sbyte> toWrite = new List<sbyte>(textBox1.Text.Length);
-        //    foreach (char ch in textBox1.Text)
-        //        toWrite.Add(Convert.ToSByte(ch));
+        private bool write(raid1 array)
+        {       //true - in case of failure; false - in case of success
+            List<sbyte> toWrite = new List<sbyte>(textBox1.Text.Length);
+            foreach (char ch in textBox1.Text)
+                toWrite.Add(Convert.ToSByte(ch));
 
-        //    writeTime = array.writeToArray(toWrite);
-        //    if (writeTime == -1)
-        //    {
-        //        writeTime = 0;
-        //        return true;
-        //    }
-        //    textBox3.Text = Convert.ToString(writeTime);
-        //    return false;
-        //}
+            writeTime = array.writeToArray(toWrite);
+            if (writeTime == -1)
+            {
+                writeTime = 0;
+                return true;
+            }
+            textBox3.Text = Convert.ToString(writeTime);
+            return false;
+        }
+
+        private bool read(raid1 array)
+        {       //true - failure, false - OK
+            List<sbyte> readHere = new List<sbyte>();
+            readTime = array.readFromArray(readHere);
+            if (readTime == -1)
+            {
+                readTime = 0;
+                return true;
+            }
+            textBox2.Text = readTime.ToString();
+            readTime = 0;
+            return false;
+        }
 
         #endregion
 
@@ -147,11 +161,13 @@ namespace raidModel
             }
             else
             {
-                //raid1 array = new raid1();
-                //for (int i = 0; i < numericUpDown1.Value; i++)
-                //    array.addDisk(hdd);
-                //if (write(array))
-                //    MessageBox.Show("Ошибка записи в массив!");
+                raid1 array = new raid1();
+                for (int i = 0; i < numericUpDown1.Value; i++)
+                    array.addDisk(hdd);
+                if (write(array))
+                    MessageBox.Show("Ошибка записи в массив!");
+                if (read(array))
+                    MessageBox.Show("Ошибка чтения из массива!");
             }
         }
 

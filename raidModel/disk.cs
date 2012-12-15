@@ -164,7 +164,8 @@ namespace raidModel
 
         public sbyte readByte(int f)
         {
-            if (f > data.Count())
+            
+            if (f >= data.Count())
                 return -128;
             return data.ElementAt(f);
         }

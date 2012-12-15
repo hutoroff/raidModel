@@ -80,14 +80,19 @@ namespace raidModel
             return hdd.ElementAt(i).writeToEnd(dat);
         }
 
-        public sbyte readFromDisk(int i, int j)
+        public sbyte readFromDisk(int diskNo, int blockNo)
         {
-            return hdd.ElementAt(i).readByte(j);
+            return hdd.ElementAt(diskNo).readByte(blockNo);
         }
 
         public float getWriteLatency(int i)
         {
             return hdd.ElementAt(i).getWLat();
+        }
+
+        public float getReadLatency(int i)
+        {
+            return hdd.ElementAt(i).getRLat();
         }
     }
 }

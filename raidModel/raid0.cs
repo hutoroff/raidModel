@@ -73,35 +73,39 @@ namespace raidModel
 
         public int readFromArray(List<sbyte> newData)
         {
-            //SOLVE WHAT A FUCK!
             DateTime start, end;
             start = DateTime.Now;
 
             if (isEnoughDisks() == 0)
                 return -1;
-            int i = 0;      //disk number in array
+            int mem = 0;      //memory slot on disk
+            int disc = 0;     //disk number in array
             bool stoper = true;
             sbyte b;
-            while(stoper)
+            do
             {
-                for(int j=0;j<array.Count();j++)        //memory slot on disk
+                if (array.getDiskState(disc) == false)
+                    return -1;
+                b = array.readFromDisk(disc, mem);
+                if (b == -128)
+                    stoper = false;
+                else
                 {
-                    if (array.getDiskState(j) == false)
-                        return -1;
-                    b = array.readFromDisk(i,j);
-                    if (b == -128)
-                        stoper = false;
-                    else
-                    {
-                        newData.Add(b);
-                        //i++;
-                    }
+                    newData.Add(b);
+                    mem++;
                 }
-            }
+                if(mem>array.getDisk(disc).getSize())
+                {
+                    disc++;
+                    mem = 0;
+                    if (disc > array.Count())
+                        stoper = false;
+                }
+            }while(stoper);
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;
-            return resultTime.Milliseconds;
+            return resultTime.Milliseconds + Convert.ToInt32(array.getReadLatency(0));
         }
     }
 }
