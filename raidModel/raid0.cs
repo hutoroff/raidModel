@@ -5,7 +5,7 @@ using System.Text;
 
 namespace raidModel
 {
-    class raid0: HBA
+    class raid0
     {
         const int minHDD = 2;       //min amount of disks in RAID-0
         double arrayCapacity;          //amount of disk space for all disks in array
@@ -68,7 +68,7 @@ namespace raidModel
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;
-            return resultTime.Milliseconds + Convert.ToInt32(array.getWriteLatency(0));
+            return resultTime.Seconds * 1000 + resultTime.Milliseconds + Convert.ToInt32(array.getWriteLatency(0));
         }
 
         public int readFromArray(List<sbyte> newData)
@@ -105,7 +105,7 @@ namespace raidModel
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;
-            return resultTime.Milliseconds + Convert.ToInt32(array.getReadLatency(0));
+            return resultTime.Seconds * 1000 + resultTime.Milliseconds + Convert.ToInt32(array.getReadLatency(0));
         }
     }
 }

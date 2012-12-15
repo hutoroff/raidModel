@@ -17,6 +17,7 @@ namespace raidModel
         int readTime;
 
         #region BusinesLogic
+        #region RAID-0
         private bool write(raid0 array)
         {       //true - in case of failure; false - in case of success
             List<sbyte> toWrite = new List<sbyte>(textBox1.Text.Length);
@@ -47,7 +48,9 @@ namespace raidModel
             readTime = 0;
             return false;            
         }
+        #endregion
 
+        #region RAID-1
         private bool write(raid1 array)
         {       //true - in case of failure; false - in case of success
             List<sbyte> toWrite = new List<sbyte>(textBox1.Text.Length);
@@ -77,7 +80,39 @@ namespace raidModel
             readTime = 0;
             return false;
         }
+        #endregion
 
+        #region RAID-5
+        private bool write(raid5 array)
+        {       //true - in case of failure; false - in case of success
+            List<sbyte> toWrite = new List<sbyte>(textBox1.Text.Length);
+            foreach (char ch in textBox1.Text)
+                toWrite.Add(Convert.ToSByte(ch));
+
+            writeTime = array.writeToArray(toWrite);
+            if (writeTime == -1)
+            {
+                writeTime = 0;
+                return true;
+            }
+            textBox3.Text = Convert.ToString(writeTime);
+            return false;
+        }
+
+        private bool read(raid5 array)
+        {       //true - failure, false - OK
+            List<sbyte> readHere = new List<sbyte>();
+            readTime = array.readFromArray(readHere);
+            if (readTime == -1)
+            {
+                readTime = 0;
+                return true;
+            }
+            textBox2.Text = readTime.ToString();
+            readTime = 0;
+            return false;
+        }
+        #endregion
         #endregion
 
         public Form1()
@@ -89,7 +124,7 @@ namespace raidModel
         {
             textBox4.Text = "1024";
             numericUpDown1.Minimum = 0;
-            numericUpDown1.Value = 2;
+            numericUpDown1.Value = 4;
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -161,22 +196,40 @@ namespace raidModel
             }
             else
             {
-                raid1 array = new raid1();
-                for (int i = 0; i < numericUpDown1.Value; i++)
-                    array.addDisk(hdd);
-                if (write(array))
-                    MessageBox.Show("Ошибка записи в массив!");
-                if (read(array))
-                    MessageBox.Show("Ошибка чтения из массива!");
+                if (radioButton1.Checked)
+                {
+                    raid1 array = new raid1();
+                    for (int i = 0; i < numericUpDown1.Value; i++)
+                        array.addDisk(hdd);
+                    if (write(array))
+                        MessageBox.Show("Ошибка записи в массив!");
+                    if (read(array))
+                        MessageBox.Show("Ошибка чтения из массива!");
+                }
+                else
+                {
+                    raid5 array = new raid5();
+                    for (int i = 0; i < numericUpDown1.Value; i++)
+                        array.addDisk(hdd);
+                    if (write(array))
+                        MessageBox.Show("Ошибка записи в массив!");
+                    if (read(array))
+                        MessageBox.Show("Ошибка чтения из массива!");
+                }
             }
         }
 
         private void radioButton0_CheckedChanged(object sender, EventArgs e)
         {
-            if(radioButton0.Checked)
+            if (radioButton0.Checked)
                 numericUpDown1.Increment = 1;
             else
-                numericUpDown1.Increment = 2;
+            {
+                if (radioButton1.Checked)
+                    numericUpDown1.Increment = 2;
+                else
+                    numericUpDown1.Increment = 1;
+            }
         }
     }
 }

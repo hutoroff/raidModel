@@ -5,9 +5,9 @@ using System.Text;
 
 namespace raidModel
 {
-    class raid1 : HBA
+    class raid1
     {
-        const int minHDD = 2;       //min amount of disks in RAID-1
+        const int minHDD = 2;          //min amount of disks in RAID-1
         double arrayCapacity;          //amount of disk space for all disks in array
         HBA array;
 
@@ -30,8 +30,6 @@ namespace raidModel
 
         int isEnoughDisks()
         {
-            if (array.Count() % 2 == 1)
-                return 0;
             if (array.Count() < minHDD)
                 return 0;
             else
@@ -41,7 +39,7 @@ namespace raidModel
         public void addDisk(disk nDisk)
         {
             array.addDisk(nDisk);
-            arrayCapacity += nDisk.getSize();
+            arrayCapacity += nDisk.getSize()/2;
         }
 
         public int writeToArray(List<sbyte> newData)
@@ -58,13 +56,13 @@ namespace raidModel
                 if (array.getDisk(j).getFreeSpace() >= 1)
                 {
                     bool failure = false;
-                    if (array.getDisk(j).getState())
-                        array.getDisk(j).writeToEnd(newData.ElementAt(i));
+                    if (array.getDisk(j).getState())                                //if first disk OK
+                        array.getDisk(j).writeToEnd(newData.ElementAt(i));          //write to it
                     else
                         failure = true;
 
-                    if (array.getDisk(j+1).getState())
-                        array.getDisk(j+1).writeToEnd(newData.ElementAt(i));
+                    if (array.getDisk(j+1).getState())                              //if second disk OK
+                        array.getDisk(j+1).writeToEnd(newData.ElementAt(i));        //write mirror to it
                     else
                         failure = true;
 
@@ -93,7 +91,7 @@ namespace raidModel
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;
-            return resultTime.Milliseconds + Convert.ToInt32(array.getWriteLatency(0));
+            return resultTime.Seconds * 1000 + resultTime.Milliseconds + Convert.ToInt32(array.getWriteLatency(0));
         }
 
         public int readFromArray(List<sbyte> newData)
@@ -136,7 +134,7 @@ namespace raidModel
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;
-            return resultTime.Milliseconds + Convert.ToInt32(array.getReadLatency(0));
+            return resultTime.Seconds * 1000 + resultTime.Milliseconds + Convert.ToInt32(array.getReadLatency(0));
         }
 
     }
