@@ -15,10 +15,6 @@ namespace raidModel
         List<sbyte> cache;          //cache memory of the disk
         float latencyRead;            //latency of time between operations of reading in ms
         float latencyWrite;           //latency of time between operations of writing in ms
-        private double p1;
-        private int p2;
-        private double p3;
-        private int p4;
 
         #region Constructors
         public disk(double nS)
