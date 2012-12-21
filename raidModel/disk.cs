@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
 
 namespace raidModel
 {
@@ -80,7 +80,7 @@ namespace raidModel
 
         public void brake()
         {   //makes disk unavalible for use
-            state = false;
+            this.state = false;
         }
 
         public void repair()
@@ -91,6 +91,11 @@ namespace raidModel
         public double getSize()
         {
             return mainSize;
+        }
+
+        public double getCashS()
+        {
+            return cacheSize;
         }
 
         public double getFreeSpace()

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
 
 namespace raidModel
 {
@@ -30,16 +30,23 @@ namespace raidModel
 
         int isEnoughDisks()
         {
-            if (array.Count() < minHDD)
+            if (array.Count < minHDD)
                 return 0;
             else
                 return 1;
         }
 
+        public void breakRandDisk()
+        {
+            Random rand = new Random();
+            array.getDisk(rand.Next(0, array.Count - 1)).brake();
+        }
+
         public void addDisk(disk nDisk)
         {
-            array.addDisk(nDisk);
-            arrayCapacity += nDisk.getSize()/2;
+            disk toAdd = new disk(nDisk.getSize(), nDisk.getCashS(), nDisk.getRLat(), nDisk.getWLat());
+            array.addDisk(toAdd);
+            arrayCapacity += nDisk.getSize();
         }
 
         public int writeToArray(List<sbyte> newData)
@@ -67,7 +74,7 @@ namespace raidModel
                         failure = true;
 
                     if (failure)
-                        if (array.Count() >= j + 2)
+                        if (array.Count >= j + 2)
                             j += 2;
                         else
                             return -1;
@@ -76,7 +83,7 @@ namespace raidModel
                 }
                 else
                 {
-                    if (array.Count() >= j + 2 && array.getDisk(j+2).getFreeSpace() >= 1)
+                    if (array.Count >= j + 2 && array.getDisk(j+2).getFreeSpace() >= 1)
                     {
                         j += 2;
                         array.getDisk(j).writeToEnd(newData.ElementAt(i));

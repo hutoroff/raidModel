@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
 
 namespace raidModel
 {
@@ -19,7 +19,7 @@ namespace raidModel
                 addDisk(dType);
                 arrayCapacity += dType.getSize();
             }
-            arrayCapacity = (array.Count() - 1) * array.getDisk(0).getSize();
+            arrayCapacity = (array.Count - 1) * array.getDisk(0).getSize();
         }
 
         public raid5()
@@ -28,9 +28,16 @@ namespace raidModel
             arrayCapacity = 0;
         }
 
+        public void breakRandDisk()
+        {
+            Random rand = new Random();
+            int i = rand.Next(0, array.Count - 1);
+            array.getDisk(i).brake();
+        }
+
         int isEnoughDisks()
         {
-            if (array.Count() < minHDD)
+            if (array.Count < minHDD)
                 return 0;
             else
                 return 1;
@@ -38,30 +45,31 @@ namespace raidModel
 
         public void addDisk(disk nDisk)
         {
-            array.addDisk(nDisk);
-            arrayCapacity = (array.Count() - 1) * array.getDisk(0).getSize();
+            disk toAdd = new disk(nDisk.getSize(), nDisk.getCashS(), nDisk.getRLat(), nDisk.getWLat());
+            array.addDisk(toAdd);
+            arrayCapacity += nDisk.getSize();
         }
 
         private sbyte xor(int hdd0,int hdd1,int mem0,int mem1)
         {
             if (hdd0 < 0)
             {
-                hdd0 = array.Count() - Math.Abs(hdd0);
+                hdd0 = array.Count - Math.Abs(hdd0);
                 mem0--;
             }
             if (hdd1 < 0)
             {
-                hdd1 = array.Count() - Math.Abs(hdd1);
+                hdd1 = array.Count - Math.Abs(hdd1);
                 mem0--;
             }
-            if(hdd0>=array.Count())
+            if(hdd0>=array.Count)
             {
-                hdd0 = Math.Abs(hdd0) - array.Count();
+                hdd0 = Math.Abs(hdd0) - array.Count;
                 mem0++;
             }
-            if (hdd1 >= array.Count())
+            if (hdd1 >= array.Count)
             {
-                hdd1 = Math.Abs(hdd1) - array.Count();
+                hdd1 = Math.Abs(hdd1) - array.Count;
                 mem1++;
             }
             if (mem0 == -1)
@@ -95,7 +103,7 @@ namespace raidModel
                             array.getDisk(hdd).writeToEnd(xor(hdd - 1, hdd - 2, mem, mem));
                             counter = 0;
                             hdd++;
-                            if (hdd >= array.Count())
+                            if (hdd >= array.Count)
                             {
                                 hdd = 0;
                                 mem++;
@@ -108,7 +116,7 @@ namespace raidModel
                             array.getDisk(hdd).writeToEnd(newData.ElementAt(mem));
                             counter++;
                             hdd++;
-                            if (hdd >= array.Count())
+                            if (hdd >= array.Count)
                             {
                                 hdd = 0;
                                 mem++;
@@ -154,7 +162,7 @@ namespace raidModel
                             else
                             {
                                 hdd++;
-                                if (hdd >= array.Count())
+                                if (hdd >= array.Count)
                                 {
                                     mem++;
                                     hdd = 0;
@@ -169,7 +177,7 @@ namespace raidModel
                             else
                             {
                                 hdd++;
-                                if (hdd >= array.Count())
+                                if (hdd >= array.Count)
                                 {
                                     mem++;
                                     hdd = 0;
@@ -179,7 +187,7 @@ namespace raidModel
                             break;
                         case 2:
                             hdd++;
-                            if (hdd >= array.Count())
+                            if (hdd >= array.Count)
                             {
                                 mem++;
                                 hdd = 0;
@@ -194,17 +202,39 @@ namespace raidModel
                     {
                         case 0:
                             b = xor(hdd + 2, hdd + 1, mem, mem);
+                            if (b == -128)                          //if there is no data to read readByter(...) returns -128
+                                cont = false;
+                            else
+                            {
+                                hdd++;
+                                if (hdd >= array.Count)
+                                {
+                                    mem++;
+                                    hdd = 0;
+                                }
+                            }
+                            counter++;
                             break;
                         case 1:
                             b = xor(hdd + 1, hdd - 1, mem, mem);
+                            if (b == -128)                          //if there is no data to read readByter(...) returns -128
+                                cont = false;
+                            else
+                            {
+                                hdd++;
+                                if (hdd >= array.Count)
+                                {
+                                    mem++;
+                                    hdd = 0;
+                                }
+                            }
+                            counter++;
                             break;
                         case 2:
                             hdd++;
-                            if (hdd >= array.Count())
+                            if (hdd >= array.Count)
                             {
                                 mem++;
-                                if (mem >= array.getDisk(0).getSize())
-                                    cont = false;
                                 hdd = 0;
                             }
                             counter = 0;

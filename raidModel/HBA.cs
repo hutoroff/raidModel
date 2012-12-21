@@ -1,35 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
 
 namespace raidModel
 {
     class HBA
     {
         private List<disk> hdd;     //list of Hard Disk Drives in RAID
+        public int Count;
 
 
         public HBA(IEnumerable<disk> diskList)
         {
+            Count = 0;
             hdd = new List<disk>();
             hdd.InsertRange(0, diskList);
+            Count++;
         }
 
         public HBA(disk nD)
         {
+            Count = 0;
             hdd = new List<disk>();
             hdd.Add(nD);
+            Count++;
         }
 
         public HBA(HBA oldH)
         {
+            Count = 0;
             hdd = new List<disk>();
             this.hdd.InsertRange(0, oldH.hdd);
+            Count += oldH.Count;
         }
 
         public HBA()
         {
+            Count = 0;
             hdd = new List<disk>();
         }
 
@@ -43,14 +51,10 @@ namespace raidModel
             return hdd.ElementAt(i).getState();
         }
 
-        public int Count()
-        {
-            return hdd.Count;
-        }
-
         public void addDisk(disk newDisk)
         {
             hdd.Add(newDisk);
+            Count++;
         }
 
         public int removeDisk()
@@ -58,6 +62,7 @@ namespace raidModel
             if (hdd.Count > 0)
             {
                 hdd.RemoveAt(hdd.Count);
+                Count--;
                 return 0;
             }
             else
@@ -69,6 +74,7 @@ namespace raidModel
             if (hdd.Count > 0 && hdd.Count >= num && num >= 0)
             {
                 hdd.RemoveAt(num);
+                Count--;
                 return 0;
             }
             else

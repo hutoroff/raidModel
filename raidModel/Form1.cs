@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
 
@@ -122,7 +121,8 @@ namespace raidModel
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            textBox4.Text = "1024";
+            textBox4.Text = "100500";
+            textBox1.ReadOnly = true;
             numericUpDown1.Minimum = 0;
             numericUpDown1.Value = 4;
         }
@@ -134,12 +134,14 @@ namespace raidModel
                 textBox4.ReadOnly = true;
                 generateStringBut1.Enabled = false;
                 textBox4.Text = Convert.ToString(textBox1.Text.Length);
+                textBox1.ReadOnly = false;
             }
             else
             {
                 textBox4.ReadOnly = false;
                 generateStringBut1.Enabled = true;
-                textBox4.Text = "1024";
+                textBox4.Text = "100500";
+                textBox1.ReadOnly = true;
             }
 
         }
@@ -171,6 +173,8 @@ namespace raidModel
 
         private void button1_Click(object sender, EventArgs e)
         {
+            textBox2.Text = "";
+            textBox3.Text = "";
             disk hdd;
             if(radioButton7.Checked)
             {
@@ -190,9 +194,17 @@ namespace raidModel
                 for (int i = 0; i < numericUpDown1.Value; i++)
                     array.addDisk(hdd);
                 if (write(array))
+                {
                     MessageBox.Show("Ошибка записи в массив!");
+                    textBox3.Text = "ERROR";
+                }
+                if (checkBox1.Checked)
+                    array.breakRandDisk();
                 if (read(array))
-                    MessageBox.Show("Ошибка чтения из массива!");
+                {
+                    textBox2.Text = "ERROR";
+                    MessageBox.Show("Ошибка чтения из массива!");                    
+                }
             }
             else
             {
@@ -202,9 +214,17 @@ namespace raidModel
                     for (int i = 0; i < numericUpDown1.Value; i++)
                         array.addDisk(hdd);
                     if (write(array))
+                    {
+                        textBox3.Text = "ERROR";
                         MessageBox.Show("Ошибка записи в массив!");
+                    }
+                    if (checkBox1.Checked)
+                        array.breakRandDisk();
                     if (read(array))
+                    {
+                        textBox2.Text = "ERROR";
                         MessageBox.Show("Ошибка чтения из массива!");
+                    }
                 }
                 else
                 {
@@ -212,9 +232,17 @@ namespace raidModel
                     for (int i = 0; i < numericUpDown1.Value; i++)
                         array.addDisk(hdd);
                     if (write(array))
+                    {
+                        textBox3.Text = "ERROR";
                         MessageBox.Show("Ошибка записи в массив!");
+                    }
+                    if (checkBox1.Checked)
+                        array.breakRandDisk();
                     if (read(array))
+                    {
+                        textBox2.Text = "ERROR";
                         MessageBox.Show("Ошибка чтения из массива!");
+                    }
                 }
             }
         }
@@ -230,6 +258,17 @@ namespace raidModel
                 else
                     numericUpDown1.Increment = 1;
             }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            textBox4.Text = textBox1.Text.Length.ToString();
+        }
+
+        private void textBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+                textBox1.SelectAll();
         }
     }
 }
