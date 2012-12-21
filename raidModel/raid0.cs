@@ -58,20 +58,32 @@ namespace raidModel
                 return -1;
             if (newData.Capacity > arrayCapacity)
                 return -1;
-            int i = 0;
-            while(i<newData.Count())
+            int mem = 0;
+            int hdd = 0;
+            
+            do
             {
-                for(int j=0;j<array.Count;j++)
+                if (array.getDisk(hdd).getFreeSpace()>=1)
                 {
-                    if (array.getDiskState(j) == false)
+                    if(array.getDiskState(hdd))
+                    {
+                        if (array.writeToDisk(hdd, newData.ElementAt(mem)) == 1)
+                            return -1;
+                        hdd++;
+                        if (hdd >= array.Count)
+                        {
+                            hdd = 0;
+                            mem++;
+                            if (mem >= array.getDisk(0).getSize())
+                                return -1;
+                        }
+                    }
+                    else
                         return -1;
-                    if (array.writeToDisk(j,newData.ElementAt(i))==1)
-                        return -1;
-                    i++;
-                    if (i >= newData.Count)
-                        break;
                 }
-            }
+                else
+                    return -1;
+            } while (mem < newData.Count);
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;
@@ -86,29 +98,30 @@ namespace raidModel
             if (isEnoughDisks() == 0)
                 return -1;
             int mem = 0;      //memory slot on disk
-            int disc = 0;     //disk number in array
-            bool stoper = true;
+            int hdd = 0;     //disk number in array
+            bool cont = true;
             sbyte b;
             do
             {
-                if (array.getDiskState(disc) == false)
-                    return -1;
-                b = array.readFromDisk(disc, mem);
-                if (b == -128)
-                    stoper = false;
+                if (array.getDiskState(hdd))
+                {
+                    b = array.readFromDisk(hdd, mem);
+                    if (b == -128)
+                        cont = false;
+                    else
+                    {
+                        newData.Add(b);
+                        hdd++;
+                    }
+                    if (hdd >= array.Count)
+                    {
+                        hdd = 0;
+                        mem++;
+                    }
+                }
                 else
-                {
-                    newData.Add(b);
-                    mem++;
-                }
-                if(mem>array.getDisk(disc).getSize())
-                {
-                    disc++;
-                    mem = 0;
-                    if (disc > array.Count)
-                        stoper = false;
-                }
-            }while(stoper);
+                    return -1;
+            }while(cont);
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;

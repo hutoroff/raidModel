@@ -56,39 +56,39 @@ namespace raidModel
 
             if (newData.Capacity > arrayCapacity)
                 return -1;
-            int i = 0;
-            int j = 0;
-            while (i < newData.Count())
+            int mem = 0;
+            int hdd = 0;
+            while (mem < newData.Count())
             {
-                if (array.getDisk(j).getFreeSpace() >= 1)
+                if (array.getDisk(hdd).getFreeSpace() >= 1)
                 {
                     bool failure = false;
-                    if (array.getDisk(j).getState())                                //if first disk OK
-                        array.getDisk(j).writeToEnd(newData.ElementAt(i));          //write to it
+                    if (array.getDisk(hdd).getState())                                //if first disk OK
+                        array.getDisk(hdd).writeToEnd(newData.ElementAt(mem));          //write to it
                     else
                         failure = true;
 
-                    if (array.getDisk(j+1).getState())                              //if second disk OK
-                        array.getDisk(j+1).writeToEnd(newData.ElementAt(i));        //write mirror to it
+                    if (array.getDisk(hdd+1).getState())                              //if second disk OK
+                        array.getDisk(hdd+1).writeToEnd(newData.ElementAt(mem));        //write mirror to it
                     else
                         failure = true;
 
                     if (failure)
-                        if (array.Count >= j + 2)
-                            j += 2;
+                        if (array.Count >= hdd + 2)
+                            hdd += 2;
                         else
                             return -1;
                     else
-                        i++;
+                        mem++;
                 }
                 else
                 {
-                    if (array.Count >= j + 2 && array.getDisk(j+2).getFreeSpace() >= 1)
+                    if (array.Count >= hdd + 2 && array.getDisk(hdd+2).getFreeSpace() >= 1)
                     {
-                        j += 2;
-                        array.getDisk(j).writeToEnd(newData.ElementAt(i));
-                        array.getDisk(j+1).writeToEnd(newData.ElementAt(i));
-                        i++;
+                        hdd += 2;
+                        array.getDisk(hdd).writeToEnd(newData.ElementAt(mem));
+                        array.getDisk(hdd+1).writeToEnd(newData.ElementAt(mem));
+                        mem++;
                     }
                     else
                         return -1;
@@ -98,7 +98,7 @@ namespace raidModel
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;
-            return resultTime.Seconds * 1000 + resultTime.Milliseconds + Convert.ToInt32(array.getWriteLatency(0));
+            return (resultTime.Seconds * 1000 + resultTime.Milliseconds + Convert.ToInt32(array.getWriteLatency(0)))*4;
         }
 
         public int readFromArray(List<sbyte> newData)
@@ -108,40 +108,40 @@ namespace raidModel
 
             if (isEnoughDisks() == 0)
                 return -1;
-            int i = 0;                                      //memory slot number
-            int j = 0;                                      //hard disk number in array
-            bool stoper = true;                             //false when nothing to read from disk
+            int mem = 0;                                      //memory slot number
+            int hdd = 0;                                      //hard disk number in array
+            bool cont = true;                             //false when nothing to read from disk
             sbyte b;
-            while (stoper)                                 //while there is data in array to read
+            while (cont)                                 //while there is data in array to read
             {
-                if (array.getDisk(j).getState())
+                if (array.getDisk(hdd).getState())
                 {
-                    b = array.getDisk(j).readByte(i);
+                    b = array.getDisk(hdd).readByte(mem);
                     if (b == -128)                          //if there is no data to read readByter(...) returns -128
-                        stoper = false;
+                        cont = false;
                     else
                     {
-                        i++;
-                        if (i > array.getDisk(j).getFreeSpace())
+                        mem++;
+                        if (mem > array.getDisk(hdd).getFreeSpace())
                         {
-                            if (j % 2 == 1)
-                                j++;
+                            if (hdd % 2 == 1)
+                                hdd++;
                             else
-                                j += 2;
+                                hdd += 2;
                         }
                     }
                 }
                 else
                 {
-                    if (j % 2 == 1)
+                    if (hdd % 2 == 1)
                         return -1;
-                    j++;
+                    hdd++;
                 }
             }
 
             end = DateTime.Now;
             TimeSpan resultTime = end - start;
-            return resultTime.Seconds * 1000 + resultTime.Milliseconds + Convert.ToInt32(array.getReadLatency(0));
+            return Convert.ToInt32((resultTime.Seconds * 1000 + resultTime.Milliseconds + Convert.ToInt32(array.getReadLatency(0)))*3.5);
         }
 
     }

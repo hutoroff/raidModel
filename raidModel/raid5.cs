@@ -88,7 +88,7 @@ namespace raidModel
 
             if (newData.Capacity > arrayCapacity)
                 return -1;
-            int hdd = 1;    //disk number
+            int hdd = 0;    //disk number
             int mem = 0;    //memory slot number
             int counter = 0;
 
@@ -103,30 +103,23 @@ namespace raidModel
                             array.getDisk(hdd).writeToEnd(xor(hdd - 1, hdd - 2, mem, mem));
                             counter = 0;
                             hdd++;
-                            if (hdd >= array.Count)
-                            {
-                                hdd = 0;
-                                mem++;
-                                if (mem >= array.getDisk(0).getSize())
-                                    return -128;
-                            }
                         }
                         else
                         {
                             array.getDisk(hdd).writeToEnd(newData.ElementAt(mem));
                             counter++;
                             hdd++;
-                            if (hdd >= array.Count)
-                            {
-                                hdd = 0;
-                                mem++;
-                                if (mem >= array.getDisk(0).getSize())
-                                    return -128;
-                            }
                         }
                     }
                     else
                         return -1;
+                    if (hdd >= array.Count)
+                    {
+                        hdd = 0;
+                        mem++;
+                        if (mem >= array.getDisk(0).getSize())
+                            return -128;
+                    }
                 }
             } while (mem < newData.Count);
 
@@ -146,103 +139,29 @@ namespace raidModel
             int mem = 0;            //memory slot
             int hdd = 0;            //hdd number in array
             int counter = 0;        //helps to find checksum block
-            sbyte b;
+            sbyte b=0;
             bool cont = true;
 
             do
             {
-                if (array.getDisk(hdd).getState())
+                if (counter != 2)
                 {
-                    switch (counter)
-                    {
-                        case 0:
-                            b = array.getDisk(hdd).readByte(mem);
-                            if (b == -128)                          //if there is no data to read readByter(...) returns -128
-                                cont = false;
-                            else
-                            {
-                                hdd++;
-                                if (hdd >= array.Count)
-                                {
-                                    mem++;
-                                    hdd = 0;
-                                }
-                            }
-                            counter++;
-                            break;
-                        case 1:
-                            b = array.getDisk(hdd).readByte(mem);
-                            if (b == -128)                          //if there is no data to read readByter(...) returns -128
-                                cont = false;
-                            else
-                            {
-                                hdd++;
-                                if (hdd >= array.Count)
-                                {
-                                    mem++;
-                                    hdd = 0;
-                                }
-                            }
-                            counter++;
-                            break;
-                        case 2:
-                            hdd++;
-                            if (hdd >= array.Count)
-                            {
-                                mem++;
-                                hdd = 0;
-                            }
-                            counter = 0;
-                            break;
-                    }
+                    if (array.getDisk(hdd).getState())
+                        b = array.getDisk(hdd).readByte(mem);
+                    else
+                        b = xor(hdd + 2, hdd + 1, mem, mem);
+                    counter++;
                 }
                 else
-                {
-                    switch (counter)
-                    {
-                        case 0:
-                            b = xor(hdd + 2, hdd + 1, mem, mem);
-                            if (b == -128)                          //if there is no data to read readByter(...) returns -128
-                                cont = false;
-                            else
-                            {
-                                hdd++;
-                                if (hdd >= array.Count)
-                                {
-                                    mem++;
-                                    hdd = 0;
-                                }
-                            }
-                            counter++;
-                            break;
-                        case 1:
-                            b = xor(hdd + 1, hdd - 1, mem, mem);
-                            if (b == -128)                          //if there is no data to read readByter(...) returns -128
-                                cont = false;
-                            else
-                            {
-                                hdd++;
-                                if (hdd >= array.Count)
-                                {
-                                    mem++;
-                                    hdd = 0;
-                                }
-                            }
-                            counter++;
-                            break;
-                        case 2:
-                            hdd++;
-                            if (hdd >= array.Count)
-                            {
-                                mem++;
-                                hdd = 0;
-                            }
-                            counter = 0;
-                            break;
-                        default:
-                            return -1;
-                    }
+                    counter = 0;
+                if (b == -128)                          //if there is no data to read readByter(...) returns -128
+                    cont = false;
 
+                hdd++;
+                if (hdd >= array.Count)
+                {
+                    mem++;
+                    hdd = 0;
                 }
             } while (cont);
 
